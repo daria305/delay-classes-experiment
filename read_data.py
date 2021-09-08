@@ -1,5 +1,12 @@
 import pandas as pd
 import os
+import numpy as np
+
+# analytical data generation
+LAM = 20
+H_SMALL = 1
+H_LARGE = 40
+ITERATIONS = 100
 
 
 def read_data_exp(path_to_data):
@@ -85,7 +92,48 @@ def read_times_file(file):
     return df
 
 
+def load_sim_data(path):
+    file_names = [os.path.join(x[0], x[2][0]) for x in os.walk(path) if not x[0] == path]
+    corresponding_k = [int(x[0][-1]) for x in os.walk(path) if not x[0] == path]
+    data_df_list = []
+    for file_name in file_names:
+        with open(file_name) as rf:
+            df = pd.read_csv(rf, sep=',')
+            df.columns = ["Rate", "col2", "col3", "TPS", "col5"]
+            data_df_list.append(df)
+            conf = df["TPS"]
+
+    return data_df_list, corresponding_k
+
+
+def analytic_val(p, k):
+    if p == 1:
+        p = .999
+    val = LAM * k / (k - 1) * (p * H_LARGE + (1 - p) * H_SMALL)
+    for _ in range(ITERATIONS):
+        val = LAM * H_SMALL + val / k / \
+              (1 - p) * (1 - p * np.exp(-k * LAM * (1 - p) * (H_LARGE - H_SMALL) / val))
+    return val
+
+
+def generate_analytical_data(k):
+    x = np.arange(100) / 100.
+    y = analytic_vec(x, k)
+    x_critical = H_LARGE * (k - 1) / (2 * H_SMALL + (k + 1) * H_LARGE)
+    return x, y, x_critical
+
+
+def analytic_vec(X, k):
+    y = np.zeros(len(X))
+    for i in range(len(X)):
+        y[i] = analytic_val(X[i], k)
+    return y
+
+
 if __name__ == "__main__":
-    DATA_PATH = "data"
-    results = read_data_exp(DATA_PATH)
+    DATA_PATH = "data-raw"
+    # results = read_data_exp(DATA_PATH)
+    SIM_PATH = "data-sim"
+    dfs, ks = load_sim_data(SIM_PATH)
+
 
