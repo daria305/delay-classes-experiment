@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 
-def read_data(path_to_data):
+def read_data_exp(path_to_data):
     results_df = pd.DataFrame(columns=["totalMPS", "TPS", "rate", "Tip Pool Size"])
     dir_names = [x[0] for x in os.walk(path_to_data)]
     for subDir in dir_names:
@@ -87,5 +87,5 @@ def read_times_file(file):
 
 if __name__ == "__main__":
     DATA_PATH = "data"
-    results = read_data(DATA_PATH)
+    results = read_data_exp(DATA_PATH)
 
