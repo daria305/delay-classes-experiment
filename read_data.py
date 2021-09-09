@@ -1,3 +1,4 @@
+from confidence_interval import calculate_confidence
 import pandas as pd
 import os
 import numpy as np
@@ -92,18 +93,29 @@ def read_times_file(file):
     return df
 
 
-def load_sim_data(path):
+def load_sim_data(path, n_conf, conf_lvl):
     file_names = [os.path.join(x[0], x[2][0]) for x in os.walk(path) if not x[0] == path]
     corresponding_k = [int(x[0][-1]) for x in os.walk(path) if not x[0] == path]
     data_df_list = []
     for file_name in file_names:
         with open(file_name) as rf:
             df = pd.read_csv(rf, sep=',')
-            df.columns = ["Rate", "col2", "col3", "TPS", "col5"]
+            df.columns = ["Rate", "col2", "col3", "TPS", "STD"]
             data_df_list.append(df)
-            conf = df["TPS"]
+    for df in data_df_list:
+        df["Lower conf"] = df.apply(apply_confidence, args=[n_conf, conf_lvl, "lower"], axis=1)
+        df["Higher conf"] = df.apply(apply_confidence, args=[n_conf, conf_lvl, "higher"], axis=1)
 
     return data_df_list, corresponding_k
+
+
+def apply_confidence(row, n_conf, conf_lvl, flag=""):
+    lower, higher, confidence = calculate_confidence(row["TPS"], n_conf, conf_lvl, row["STD"], row["TPS"])
+    if flag == "lower":
+        return lower
+    if flag == "higher":
+        return higher
+    return confidence
 
 
 def analytic_val(p, k):
@@ -134,6 +146,6 @@ if __name__ == "__main__":
     DATA_PATH = "data-raw"
     # results = read_data_exp(DATA_PATH)
     SIM_PATH = "data-sim"
-    dfs, ks = load_sim_data(SIM_PATH)
+    dfs, ks = load_sim_data(SIM_PATH, 1000, 0.95)
 
 

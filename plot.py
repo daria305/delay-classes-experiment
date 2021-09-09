@@ -83,12 +83,12 @@ def plot_final_fig2(results_df, plot_title):
 
 if __name__ == "__main__":
     results = read_data_exp(DATA_PATH)
-    result = group_data(results, 0)
-    result_filtered = group_data(results, 200)
+    result = group_data(results, 0, 0)
+    result_filtered = group_data(results, 200, 0)
 
     plot_count_scatter(result, result_filtered)
 
-    plot_final_fig2(group_data(results, 0), "No filtering")
-    plot_final_fig2(group_data(results, 400), "filter 400")
-    plot_final_fig2(group_data(results, 350), "filter 350")
-    plot_final_fig2(group_data(results, 200), "filter 200")
+    plot_final_fig2(group_data(results, 0,  0.5), "No filtering")
+    plot_final_fig2(group_data(results, 400, 0.5), "filter 400")
+    plot_final_fig2(group_data(results, 350,  0.5), "filter 350")
+    plot_final_fig2(group_data(results, 200,  0.5), "filter 200")
