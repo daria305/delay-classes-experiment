@@ -103,8 +103,10 @@ def load_sim_data(path, n_conf, conf_lvl):
             df.columns = ["Rate", "col2", "col3", "TPS", "STD"]
             data_df_list.append(df)
     for df in data_df_list:
-        df["Lower conf"] = df.apply(apply_confidence, args=[n_conf, conf_lvl, "lower"], axis=1)
-        df["Higher conf"] = df.apply(apply_confidence, args=[n_conf, conf_lvl, "higher"], axis=1)
+        df["Lower conf"] = df.apply(lambda row: row["TPS"] - row["STD"], axis=1)
+        df["Higher conf"] = df.apply(lambda row: row["TPS"] + row["STD"], axis=1)
+        # df["Lower conf"] = df.apply(apply_confidence, args=[n_conf, conf_lvl, "lower"], axis=1)
+        # df["Higher conf"] = df.apply(apply_confidence, args=[n_conf, conf_lvl, "higher"], axis=1)
 
     return data_df_list, corresponding_k
 

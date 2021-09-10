@@ -18,9 +18,10 @@ def calculate_confidence(df_col, n, confidence, std=0, avg=0):
     # If the error bars you want to build are supposed to be around an estimation of an AVERAGE,
     # the error bar goes from lower_limit to higher_limit, where
     s = statistics.NormalDist(mu=0, sigma=1).inv_cdf(1 - (1 - confidence) / 2)
-    lower_limit = sample_average - s * standard_error
-    higher_limit = sample_average + s * standard_error
+    conf = s * standard_error
+    lower_limit = sample_average - conf
+    higher_limit = sample_average + conf
     # print("n", n, "sample_average", sample_average, "conf", confidence)
 
-    return lower_limit, higher_limit, confidence
+    return lower_limit, higher_limit, conf
 

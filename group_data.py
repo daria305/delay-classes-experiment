@@ -5,7 +5,7 @@ from confidence_interval import calculate_confidence
 def aggregate_results(df):
     # print("col for rate", round(df['interval'].max(), 2))
     n = len(df['Tip Pool Size'])
-    lower_limit, higher_limit, _ = calculate_confidence(df['Tip Pool Size'], n, 0.95)
+    lower_limit, higher_limit, confidence = calculate_confidence(df['Tip Pool Size'], n, 0.95)
     final_df = {
         'Rate': round(df['interval'].max(), 2),
         'Max rate': df['rate'].max(),
@@ -15,9 +15,10 @@ def aggregate_results(df):
         'Number of observations': round(df['rate'].count()),
         'Lower conf': lower_limit,
         'Higher conf': higher_limit,
+        'Confidence %': round(confidence/df['Tip Pool Size'].mean()*100, 2)
     }
     return pd.Series(final_df, index=['Rate', 'Max rate', 'Tip Pool Size', 'Min Tip Pool Size', 'Max Tip Pool Size',
-                                      'Number of observations', 'Lower conf', 'Higher conf'])
+                                      'Number of observations', 'Lower conf', 'Higher conf', 'Confidence %'])
 
 
 def generate_interval(x):
